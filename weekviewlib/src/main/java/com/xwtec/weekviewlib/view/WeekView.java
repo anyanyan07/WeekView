@@ -15,7 +15,9 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,9 +39,11 @@ import java.util.List;
  * Describe:xxx
  */
 
-public class WeekView extends FrameLayout implements ScrollListener, UpdateListener {
+public class WeekView extends FrameLayout implements ScrollListener, UpdateListener, View.OnClickListener, DayClickListener {
     private TextView tvCurrentMonth;
     private WeekViewPager weekViewPager;
+    private ImageView ivLeft;
+    private ImageView ivRight;
     private float normalTextSize;
     private int normalTextColor;
     private float activeTextSize;
@@ -53,11 +57,10 @@ public class WeekView extends FrameLayout implements ScrollListener, UpdateListe
 
     public void setDayClickListener(DayClickListener dayClickListener) {
         this.dayClickListener = dayClickListener;
-        if (weekFragmentList != null) {
-            for (int i = 0; i < weekFragmentList.size(); i++) {
-                weekFragmentList.get(i).setDayClickListener(dayClickListener);
-            }
-        }
+    }
+
+    public void setActiveDay(String activeDay) {
+        this.activeDay = activeDay;
     }
 
     public WeekView(@NonNull Context context) {
@@ -85,21 +88,47 @@ public class WeekView extends FrameLayout implements ScrollListener, UpdateListe
         View view = LayoutInflater.from(context).inflate(R.layout.week_layout, this, true);
         tvCurrentMonth = view.findViewById(R.id.tv_current_month);
         weekViewPager = view.findViewById(R.id.week_view_pager);
+        ivLeft = view.findViewById(R.id.iv_left);
+        ivRight = view.findViewById(R.id.iv_right);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WeekView);
+        int ivPadding = typedArray.getDimensionPixelSize(R.styleable.WeekView_iv_padding, 0);
+        boolean showIv = typedArray.getBoolean(R.styleable.WeekView_show_iv, false);
+        if (showIv) {
+            int leftSrc = typedArray.getResourceId(R.styleable.WeekView_left_src, R.drawable.left);
+            int rightSrc = typedArray.getResourceId(R.styleable.WeekView_right_src, R.drawable.right);
+            int ivWidth = typedArray.getDimensionPixelSize(R.styleable.WeekView_iv_width, 0);
+            int ivHeight = typedArray.getDimensionPixelSize(R.styleable.WeekView_iv_height, 0);
+            LinearLayout.LayoutParams ivLayoutParams = (LinearLayout.LayoutParams) ivLeft.getLayoutParams();
+            ivLayoutParams.width = ivWidth;
+            ivLayoutParams.height = ivHeight;
+            ivLeft.setImageResource(leftSrc);
+            ivLeft.setLayoutParams(ivLayoutParams);
+            ivLeft.setPadding(ivPadding, ivPadding, ivPadding, ivPadding);
+            ivRight.setImageResource(rightSrc);
+            ivRight.setLayoutParams(ivLayoutParams);
+            ivRight.setPadding(ivPadding, ivPadding, ivPadding, ivPadding);
+        } else {
+            ivLeft.setVisibility(GONE);
+            ivRight.setVisibility(GONE);
+            weekViewPager.setPadding(ivPadding, 0, ivPadding, 0);
+        }
         float monthTextSize = typedArray.getDimensionPixelSize(R.styleable.WeekView_month_text_size, 15);
         int monthTextColor = typedArray.getColor(R.styleable.WeekView_month_text_color, Color.BLACK);
+        int verticalSpace = typedArray.getDimensionPixelSize(R.styleable.WeekView_vertical_space, 0);
         tvCurrentMonth.setTextSize(TypedValue.COMPLEX_UNIT_PX, monthTextSize);
         tvCurrentMonth.setTextColor(monthTextColor);
+        tvCurrentMonth.setPadding(ivPadding, 0, ivPadding, 0);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) tvCurrentMonth.getLayoutParams();
+        layoutParams.bottomMargin = verticalSpace;
+        tvCurrentMonth.setLayoutParams(layoutParams);
         normalTextSize = typedArray.getDimensionPixelSize(R.styleable.WeekView_normal_size, 15);
         normalTextColor = typedArray.getColor(R.styleable.WeekView_normal_color, Color.BLACK);
         activeTextSize = typedArray.getDimensionPixelSize(R.styleable.WeekView_active_size, 18);
         activeTextColor = typedArray.getColor(R.styleable.WeekView_active_color, Color.RED);
-        int verticalSpace = typedArray.getDimensionPixelSize(R.styleable.WeekView_vertical_space, 10);
-        int weekHeight = typedArray.getDimensionPixelSize(R.styleable.WeekView_week_height, 10);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) weekViewPager.getLayoutParams();
-        layoutParams.height = weekHeight;
-        layoutParams.topMargin = verticalSpace;
-        weekViewPager.setLayoutParams(layoutParams);
+        int weekHeight = typedArray.getDimensionPixelSize(R.styleable.WeekView_week_height, 0);
+        ViewGroup.LayoutParams weekViewPagerLayoutParams = weekViewPager.getLayoutParams();
+        weekViewPagerLayoutParams.height = weekHeight;
+        weekViewPager.setLayoutParams(weekViewPagerLayoutParams);
         typedArray.recycle();
         initListener();
         initWeekData();
@@ -111,7 +140,7 @@ public class WeekView extends FrameLayout implements ScrollListener, UpdateListe
             WeekFragment weekFragment = new WeekFragment();
             weekFragment.setStyle(normalTextColor, activeTextColor, normalTextSize, activeTextSize);
             weekFragment.setData(weekData.subList(i * 7, i * 7 + 7));
-            weekFragment.setDayClickListener(dayClickListener);
+            weekFragment.setDayClickListener(this);
             weekFragmentList.add(weekFragment);
         }
         weekViewPager.setFragments(fm, weekFragmentList);
@@ -155,6 +184,8 @@ public class WeekView extends FrameLayout implements ScrollListener, UpdateListe
     }
 
     private void initListener() {
+        ivLeft.setOnClickListener(this);
+        ivRight.setOnClickListener(this);
         weekViewPager.setScrollListener(this);
         weekViewPager.setUpdateListener(this);
     }
@@ -182,6 +213,31 @@ public class WeekView extends FrameLayout implements ScrollListener, UpdateListe
         for (int i = 0; i < weekFragmentList.size(); i++) {
             WeekFragment weekFragment = weekFragmentList.get(i);
             weekFragment.setData(weekData.subList(i * 7, i * 7 + 7));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+        if (viewId == R.id.iv_left) {
+            weekViewPager.setCurrentItem(0);
+        } else if (viewId == R.id.iv_right) {
+            weekViewPager.setCurrentItem(2);
+        }
+    }
+
+    @Override
+    public void onDayClickListener(String clickDate) {
+        this.activeDay = clickDate;
+        for (int i = 0; i < weekData.size(); i++) {
+            WeekBean weekBean = weekData.get(i);
+            weekBean.setActive(activeDay.equals(weekBean.getDate()));
+        }
+        for (int i = 0; i < weekFragmentList.size(); i++) {
+            weekFragmentList.get(i).updateView();
+        }
+        if (dayClickListener != null) {
+            dayClickListener.onDayClickListener(clickDate);
         }
     }
 }

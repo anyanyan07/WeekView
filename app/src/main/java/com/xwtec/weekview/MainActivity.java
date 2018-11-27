@@ -8,13 +8,14 @@ import com.xwtec.weekviewlib.listener.DayClickListener;
 import com.xwtec.weekviewlib.view.WeekView;
 
 public class MainActivity extends AppCompatActivity implements DayClickListener {
+    private WeekView weekView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WeekView weekView = findViewById(R.id.week_view);
+        weekView = findViewById(R.id.week_view);
         weekView.setFragments(getSupportFragmentManager());
         weekView.setDayClickListener(this);
     }

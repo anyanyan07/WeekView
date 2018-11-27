@@ -2,12 +2,18 @@
 <resources>
     <declare-styleable name="WeekView">
         <attr name="vertical_space" format="dimension" />
-        <attr name="week_height" format="dimension" />
         <attr name="month_text_size" format="dimension" />
         <attr name="month_text_color" format="color" />
         <attr name="active_color" format="color" />
         <attr name="active_size" format="dimension" />
         <attr name="normal_size" format="dimension" />
         <attr name="normal_color" format="color" />
+        <attr name="left_src" format="reference" />
+        <attr name="right_src" format="reference" />
+        <attr name="iv_width" format="dimension" />
+        <attr name="iv_height" format="dimension" />
+        <attr name="iv_padding" format="dimension" />
+        <attr name="show_iv" format="boolean" />
+        <attr name="week_height" format="dimension"/>
     </declare-styleable>
 </resources>

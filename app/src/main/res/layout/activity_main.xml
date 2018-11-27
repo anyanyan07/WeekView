@@ -9,14 +9,19 @@
     <com.xwtec.weekviewlib.view.WeekView
         android:id="@+id/week_view"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         app:active_color="#f00"
         app:active_size="18sp"
+        app:iv_height="34dp"
+        app:iv_padding="10dp"
+        app:iv_width="28dp"
         app:month_text_color="#f00"
         app:month_text_size="20sp"
         app:normal_color="#333"
         app:normal_size="15sp"
-        app:vertical_space="20dp"
-        app:week_height="100dp" />
+        app:show_iv="true"
+        app:vertical_space="0dp"
+        app:week_height="50dp" />
 
 </FrameLayout>
