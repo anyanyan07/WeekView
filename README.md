@@ -1,7 +1,6 @@
 项目需要，自定义了一个可以无限左右滑动的显示一周的日历控件（产品的灵感来自苹果自带的日历上的某个控件）。
 
-效果图：
-![效果图](https://img-blog.csdnimg.cn/20181127180642758.gif)
+![效果图](https://github.com/anyanyan07/WeekView/blob/master/screenPage/GIF_20181127_175851.gif)
 
 
 使用：
