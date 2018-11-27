@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xwtec.weekview.MainActivity">
+
+    <com.xwtec.weekviewlib.view.WeekView
+        android:id="@+id/week_view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:active_color="#f00"
+        app:active_size="18sp"
+        app:month_text_color="#f00"
+        app:month_text_size="20sp"
+        app:normal_color="#333"
+        app:normal_size="15sp"
+        app:vertical_space="20dp"
+        app:week_height="100dp" />
+
+</FrameLayout>

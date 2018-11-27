@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WeekView">
+        <attr name="vertical_space" format="dimension" />
+        <attr name="week_height" format="dimension" />
+        <attr name="month_text_size" format="dimension" />
+        <attr name="month_text_color" format="color" />
+        <attr name="active_color" format="color" />
+        <attr name="active_size" format="dimension" />
+        <attr name="normal_size" format="dimension" />
+        <attr name="normal_color" format="color" />
+    </declare-styleable>
+</resources>
